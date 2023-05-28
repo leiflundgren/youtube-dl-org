@@ -372,7 +372,7 @@ class FileDownloader(object):
                     int(sleep_interval) if sleep_interval.is_integer()
                     else '%.2f' % sleep_interval))
             time.sleep(sleep_interval)
-
+                        
         return self.real_download(filename, info_dict)
 
     def real_download(self, filename, info_dict):

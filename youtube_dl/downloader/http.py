@@ -196,6 +196,7 @@ class HttpFD(FileDownloader):
 
         def download():
             data_len = ctx.data.info().get('Content-length', None)
+            info_dict['content-type'] = ctx.content_type = ctx.data.info().get('Content-Type', None)
 
             # Range HTTP header may be ignored/unsupported by a webserver
             # (e.g. extractor/scivee.py, extractor/bambuser.py).
@@ -305,6 +306,7 @@ class HttpFD(FileDownloader):
                     'eta': eta,
                     'speed': speed,
                     'elapsed': now - ctx.start_time,
+                    'content-type': ctx.content_type,
                 })
 
                 if data_len is not None and byte_counter == data_len:
@@ -340,6 +342,7 @@ class HttpFD(FileDownloader):
                 'filename': ctx.filename,
                 'status': 'finished',
                 'elapsed': time.time() - ctx.start_time,
+                'content-type': ctx.content_type,
             })
 
             return True

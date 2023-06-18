@@ -2063,7 +2063,7 @@ class YoutubeDL(object):
                     else:
                         assert fixup_policy in ('ignore', 'never')
 
-                if  info_dict.get('content-type').startswith('application/json'):
+                if  info_dict.get('content-type', '').startswith('application/json'):
                     with open(info_dict['_filename'], 'rt') as jsonfile:
                         jsondata = json.load(jsonfile)
                         for json_dict in jsondata:

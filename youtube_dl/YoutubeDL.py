@@ -2000,6 +2000,9 @@ class YoutubeDL(object):
                 self.report_error('content too short (expected %s bytes and served %s)' % (err.expected, err.downloaded))
                 return
 
+            if self.params.get('verbose', False):
+                    self.to_screen('[debug] info-dict: ' + str(info_dict))
+
             if success and filename != '-':
                 # Fixup content
                 fixup_policy = self.params.get('fixup')
@@ -2064,19 +2067,26 @@ class YoutubeDL(object):
                         assert fixup_policy in ('ignore', 'never')
 
                 if  info_dict.get('content-type', '').startswith('application/json'):
-                    with open(info_dict['_filename'], 'rt') as jsonfile:
+                    filename = info_dict['_filename'] 
+                    jsondata = []
+                    with open(filename, 'rt') as jsonfile:
                         jsondata = json.load(jsonfile)
-                        for json_dict in jsondata:
-                            videoUrl = json_dict['videoUrl']
-                            old_attempts = info_dict.get('retry_after_json', [info_dict['formats'][-1]['url']])
-                            if json_dict['format'] == "mp4" and videoUrl and (not (videoUrl in old_attempts)):
-                                info_dict['url'] = videoUrl
-                                info_dict['ext'] = 'mp4'
-                                old_attempts.append(videoUrl)
-                                info_dict['retry_after_json'] = old_attempts # to make sure recursion is not infinite
-                                if self.params.get('verbose'): self._write_string('[debug] Downloaded json pointing to new download-url: %s\n' % videoUrl)
+                        
+                    for json_dict in jsondata:
+                        videoUrl = json_dict['videoUrl']
+                        old_attempts = info_dict.get('retry_after_json', [info_dict['formats'][-1]['url']])
+                        if json_dict['format'] == "mp4" and videoUrl and (not (videoUrl in old_attempts)):
+                            info_dict['url'] = videoUrl
+                            info_dict['ext'] = 'mp4'
+                            old_attempts.append(videoUrl)
+                            info_dict['retry_after_json'] = old_attempts # to make sure recursion is not infinite
+                            if self.params.get('verbose'): self._write_string('[debug] Downloaded json pointing to new download-url: %s\n' % videoUrl)
                                 
-                                return self.process_info(info_dict)
+                            self.process_info(info_dict)
+                            # no exception, so assume good
+                            if self.params.get('verbose', False):
+                                self.to_screen('[debug] Following target in json successful. Deleting old file %s\n' % filename)
+                            os.remove(filename)
 
 
 

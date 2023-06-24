@@ -2087,7 +2087,7 @@ class YoutubeDL(object):
                             if self.params.get('verbose', False):
                                 self.to_screen('[debug] Following target in json successful. Deleting old file %s\n' % filename)
                             os.remove(filename)
-
+                            break # successful
 
 
                 try:
